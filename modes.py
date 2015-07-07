@@ -79,7 +79,7 @@ def loop():
     while True:
         try:
             res = requests.get(ROOT_URL)
-            print('{} :: {}'.format(datetime.now().isoformat(), res.content)
+            print('{} :: {}'.format(datetime.now().isoformat(), res.content))
             process_jobs(res.json())
         except:
             pass
