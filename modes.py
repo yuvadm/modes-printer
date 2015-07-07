@@ -1,8 +1,11 @@
 import cups
+import redis
 
 from PIL import Image, ImageColor, ImageDraw, ImageFont
 from datetime import datetime
+from time import sleep
 
+ROOT_URL = 'http://10.55.55.229:3000/prints'
 BASE_IMAGE = 'base.jpg'
 BASE_FONT = 'cutive.ttf'
 MATRIX_PADDING = 3
@@ -11,6 +14,7 @@ MATRIX_PIXEL_SIZE = 80
 MATRIX_OFFSET = ((1181 - (MATRIX_PIXEL_SIZE * MATRIX_SIZE)) / 2, 300)
 PRINTER = 'Canon_iP7200_series'
 
+r = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 class ModesPrinter(object):
 
@@ -56,9 +60,31 @@ class ModesPrinter(object):
         conn = cups.Connection()
         conn.printFile(PRINTER, self.filename, 'title', {})
 
+    def process_image(self):
+        self.draw_image()
+        self.save_image()
+        self.print_image()
+
+
+def process_jobs(jobs):
+    for job in jobs:
+        jobkey = 'jobs:{}'.format(job['data'])
+        if r.get(jobkey):
+            continue
+        else:
+            ModesPrinter(job['data']).process_image()
+            r.set(jobkey, '1', 60 * 5)
+
+def loop():
+    while True:
+        try:
+            res = requests.get(ROOT_URL)
+            print('{} :: {}'.format(datetime.now().isoformat(), res.content)
+            process_jobs(res.json())
+        except:
+            pass
+        finally:
+            sleep(10)
+
 if __name__ == '__main__':
-    imstr = 'yuv.adm|062015|9A8D6D736489|eff51f2af82c06071120a'
-    mp = ModesPrinter(imstr)
-    mp.draw_image()
-    mp.save_image()
-    mp.print_image()
+    loop()
