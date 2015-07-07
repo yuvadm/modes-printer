@@ -1,2 +1,3 @@
 Pillow==2.9.0
 pycups==1.9.72
+redis==2.10.3
