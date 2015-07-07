@@ -20,7 +20,7 @@ class ModesPrinter(object):
         self.date = datetime.strptime(d, '%m%Y').date()
         self.dominants = [ImageColor.getrgb(x) for x in ('#' + dominants[:6], '#' + dominants[6:])]
         self.matrix = bin(int(matrix, 16))[2+MATRIX_PADDING:]
-        self.filename = '{}_{}.jpg'.format(self.username, self.date.strftime('%Y_%m'))
+        self.filename = 'photos/{}_{}.jpg'.format(self.username, self.date.strftime('%Y_%m'))
 
     def _debug(self):
         print(self.username, self.date.month, self.date.year, self.dominants, self.matrix)
