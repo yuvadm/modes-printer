@@ -20,11 +20,12 @@ class ModesPrinter(object):
         self.date = datetime.strptime(d, '%m%Y').date()
         self.dominants = [ImageColor.getrgb(x) for x in ('#' + dominants[:6], '#' + dominants[6:])]
         self.matrix = bin(int(matrix, 16))[2+MATRIX_PADDING:]
+        self.filename = '{}_{}.jpg'.format(self.username, self.date.strftime('%Y_%m'))
 
     def _debug(self):
         print(self.username, self.date.month, self.date.year, self.dominants, self.matrix)
 
-    def _draw_image_matrix(self, draw):
+    def _draw_image_matrix(self):
         for y in range(MATRIX_SIZE):
             for x in range(MATRIX_SIZE):
                 start = (
@@ -36,25 +37,28 @@ class ModesPrinter(object):
                     start[1] + MATRIX_PIXEL_SIZE
                 )
                 fill = self.dominants[int(self.matrix[(y * MATRIX_SIZE) + x])]
-                draw.rectangle([start, end], fill=fill)
+                self.draw.rectangle([start, end], fill=fill)
 
-    def _draw_image_text(self, draw):
-        font = ImageFont.truetype('cutive.ttf', 32)
-        draw.text((300,1100), '@{} / {}'.format(self.username, self.date.strftime('%B %Y')), font=font, fill=(0,0,0))
+    def _draw_image_text(self):
+        self.draw.text((300,1100), '@{} / {}'.format(self.username, self.date.strftime('%B %Y')), 
+            font=ImageFont.truetype('cutive.ttf', 32), fill=(0,0,0))
 
     def draw_image(self):
-        im = Image.open(BASE_IMAGE).convert('RGB')
-        draw = ImageDraw.Draw(im)
-        self._draw_image_matrix(draw)
-        self._draw_image_text(draw)
-        im.show()
+        self.im = Image.open(BASE_IMAGE).convert('RGB')
+        self.draw = ImageDraw.Draw(self.im)
+        self._draw_image_matrix()
+        self._draw_image_text()
+
+    def save_image(self):
+        self.im.save(self.filename)
 
     def print_image():
         conn = cups.Connection()
-        conn.printFile(PRINTER, 'base.jpg', 'title', {})
+        conn.printFile(PRINTER, self.filename, 'title', {})
 
 if __name__ == '__main__':
     imstr = 'yuv.adm|062015|9A8D6D736489|eff51f2af82c06071120a'
     mp = ModesPrinter(imstr)
-    mp._debug()
     mp.draw_image()
+    mp.save_image()
+    mp.print_image()
