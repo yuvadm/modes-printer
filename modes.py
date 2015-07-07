@@ -1,5 +1,6 @@
 import cups
 import redis
+import requests
 
 from PIL import Image, ImageColor, ImageDraw, ImageFont
 from datetime import datetime
@@ -81,8 +82,8 @@ def loop():
             res = requests.get(ROOT_URL)
             print('{} :: {}'.format(datetime.now().isoformat(), res.content))
             process_jobs(res.json())
-        except:
-            pass
+        except Exception as e:
+            print('{} :: {}'.format(datetime.now().isoformat(), e))
         finally:
             sleep(10)
 
