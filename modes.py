@@ -1,10 +1,14 @@
 import cups
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageColor, ImageDraw, ImageFont
 from datetime import datetime
 
 BASE_IMAGE = 'base.jpg'
 BASE_FONT = 'cutive.ttf'
+MATRIX_PADDING = 3
+MATRIX_SIZE = 9
+MATRIX_PIXEL_SIZE = 80
+MATRIX_OFFSET = ((1181 - (MATRIX_PIXEL_SIZE * MATRIX_SIZE)) / 2, 300)
 PRINTER = 'Canon_iP7200_series'
 
 
@@ -14,17 +18,35 @@ class ModesPrinter(object):
         username, d, dominants, matrix = imstr.split('|')
         self.username = username
         self.date = datetime.strptime(d, '%m%Y').date()
-        self.dominants = [dominants[:6], dominants[6:]]
-        self.matrix = bin(int(matrix, 16))[5:]
+        self.dominants = [ImageColor.getrgb(x) for x in ('#' + dominants[:6], '#' + dominants[6:])]
+        self.matrix = bin(int(matrix, 16))[2+MATRIX_PADDING:]
 
     def _debug(self):
         print(self.username, self.date.month, self.date.year, self.dominants, self.matrix)
 
-    def draw_image(self):
-        im = Image.open(BASE_IMAGE)
-        draw = ImageDraw.Draw(im)
+    def _draw_image_matrix(self, draw):
+        for y in range(MATRIX_SIZE):
+            for x in range(MATRIX_SIZE):
+                start = (
+                    MATRIX_OFFSET[0] + (x * MATRIX_PIXEL_SIZE), 
+                    MATRIX_OFFSET[1] + (y * MATRIX_PIXEL_SIZE)
+                )
+                end = (
+                    start[0] + MATRIX_PIXEL_SIZE, 
+                    start[1] + MATRIX_PIXEL_SIZE
+                )
+                fill = self.dominants[int(self.matrix[(y * MATRIX_SIZE) + x])]
+                draw.rectangle([start, end], fill=fill)
+
+    def _draw_image_text(self, draw):
         font = ImageFont.truetype('cutive.ttf', 32)
-        draw.text((10, 25), '@{} / {}'.format(self.username, self.date.strftime('%B %Y')), font=font)
+        draw.text((300,1100), '@{} / {}'.format(self.username, self.date.strftime('%B %Y')), font=font, fill=(0,0,0))
+
+    def draw_image(self):
+        im = Image.open(BASE_IMAGE).convert('RGB')
+        draw = ImageDraw.Draw(im)
+        self._draw_image_matrix(draw)
+        self._draw_image_text(draw)
         im.show()
 
     def print_image():
@@ -34,4 +56,5 @@ class ModesPrinter(object):
 if __name__ == '__main__':
     imstr = 'yuv.adm|062015|9A8D6D736489|eff51f2af82c06071120a'
     mp = ModesPrinter(imstr)
+    mp._debug()
     mp.draw_image()
