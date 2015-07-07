@@ -52,7 +52,7 @@ class ModesPrinter(object):
     def save_image(self):
         self.im.save(self.filename)
 
-    def print_image():
+    def print_image(self):
         conn = cups.Connection()
         conn.printFile(PRINTER, self.filename, 'title', {})
 
