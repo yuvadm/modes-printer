@@ -97,7 +97,7 @@ def loop():
             res = requests.get(ROOT_URL)
             process_jobs(res.json())
         except Exception as e:
-            log.error('{}'.format(e))
+            logging.error('{}'.format(e))
         finally:
             sleep(10)
 
