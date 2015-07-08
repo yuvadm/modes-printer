@@ -14,7 +14,7 @@ BASE_IMAGE = 'base.jpg'
 BASE_FONT = 'cutive.ttf'
 MATRIX_PADDING = 3
 MATRIX_SIZE = 9
-MATRIX_PIXEL_SIZE = 80
+MATRIX_PIXEL_SIZE = 98
 MATRIX_OFFSET = ((1181 - (MATRIX_PIXEL_SIZE * MATRIX_SIZE)) / 2, 300)
 PRINTER = 'Canon_iP7200_series'
 
@@ -53,10 +53,10 @@ class ModesPrinter(object):
                 self.draw.rectangle([start, end], fill=fill)
 
     def _draw_image_text(self):
-        font = ImageFont.truetype('cutive.ttf', 48)
+        font = ImageFont.truetype('cutive.ttf', 40)
         text = '@{} / {}'.format(self.username, self.date.strftime('%B %Y'))
         size = font.getsize(text)
-        self.draw.text(((1181 / 2) - (size[0] / 2),1100), text, font=font, fill=(0,0,0))
+        self.draw.text(((1181 / 2) - (size[0] / 2), 1250), text, font=font, fill=(0,0,0))
 
     def draw_image(self):
         self.im = Image.open(BASE_IMAGE).convert('RGB')
