@@ -1,4 +1,5 @@
 import cups
+import logging
 import redis
 import requests
 import sys
@@ -6,6 +7,7 @@ import sys
 from PIL import Image, ImageColor, ImageDraw, ImageFont
 from datetime import datetime
 from time import sleep
+
 
 ROOT_URL = 'http://10.55.55.229:3000/prints'
 BASE_IMAGE = 'base.jpg'
@@ -16,7 +18,9 @@ MATRIX_PIXEL_SIZE = 80
 MATRIX_OFFSET = ((1181 - (MATRIX_PIXEL_SIZE * MATRIX_SIZE)) / 2, 300)
 PRINTER = 'Canon_iP7200_series'
 
+logging.basicConfig(filename='modes.log', filemode='a', level=logging.INFO)
 r = redis.StrictRedis(host='localhost', port=6379, db=0)
+
 
 class ModesPrinter(object):
 
@@ -81,9 +85,9 @@ def process_jobs(jobs):
     for job in jobs:
         jobkey = 'jobs:{}'.format(job['data'])
         if r.get(jobkey):
-            continue
+            logging.debug('Ignoring job {}'.format(job['data']))
         else:
-            print('{} :: Got job {}'.format(datetime.now().isoformat(), job['data']))
+            logging.info('Got job {}'.format(job['data']))
             ModesPrinter(job['data']).process_image()
             r.set(jobkey, '1', 60 * 5)
 
@@ -93,7 +97,7 @@ def loop():
             res = requests.get(ROOT_URL)
             process_jobs(res.json())
         except Exception as e:
-            print('{} :: {}'.format(datetime.now().isoformat(), e))
+            log.error('{}'.format(e))
         finally:
             sleep(10)
 
@@ -102,5 +106,5 @@ if __name__ == '__main__':
         test = 'yuv.adm|062015|9A8D6D736489|eff51f2af82c06071120a'
         ModesPrinter(test).test_image()
     else:
-        print('{} :: Startup'.format(datetime.now().isoformat()))
+        logging.info('Startup...')
         loop()
