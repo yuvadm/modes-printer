@@ -9,7 +9,7 @@ from datetime import datetime
 from time import sleep
 
 
-ROOT_URL = 'http://10.55.55.229:3000/prints'
+ROOT_URL = 'http://www.modes.me/prints'
 BASE_IMAGE = 'base.jpg'
 BASE_FONT = 'cutive.ttf'
 MATRIX_PADDING = 3
