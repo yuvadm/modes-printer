@@ -19,6 +19,8 @@ MATRIX_OFFSET = ((1181 - (MATRIX_PIXEL_SIZE * MATRIX_SIZE)) / 2, 300)
 PRINTER = 'Canon_iP7200_series'
 
 logging.basicConfig(filename='modes.log', filemode='a', level=logging.INFO)
+logging.getLogger('requests').setLevel(logging.WARNING)  # suppress requests stuff
+
 r = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 
