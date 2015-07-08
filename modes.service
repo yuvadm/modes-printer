@@ -1,0 +1,19 @@
+[Unit]
+Description=Modes Printing Daemon
+Requires=redis.service
+After=redis.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python /home/pi/dev/modes-printer/modes.py
+
+User=pi
+Group=pi
+WorkingDirectory=/home/pi/dev/modes-printer/
+
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
+
