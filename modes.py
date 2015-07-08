@@ -56,7 +56,7 @@ class ModesPrinter(object):
         font = ImageFont.truetype('cutive.ttf', 40)
         text = '@{} / {}'.format(self.username, self.date.strftime('%B %Y'))
         size = font.getsize(text)
-        self.draw.text(((1181 / 2) - (size[0] / 2), 1250), text, font=font, fill=(0,0,0))
+        self.draw.text(((1181 / 2) - (size[0] / 2), 1220), text, font=font, fill=(0,0,0))
 
     def draw_image(self):
         self.im = Image.open(BASE_IMAGE).convert('RGB')
