@@ -1,6 +1,7 @@
 import cups
 import redis
 import requests
+import sys
 
 from PIL import Image, ImageColor, ImageDraw, ImageFont
 from datetime import datetime
@@ -45,8 +46,10 @@ class ModesPrinter(object):
                 self.draw.rectangle([start, end], fill=fill)
 
     def _draw_image_text(self):
-        self.draw.text((300,1100), '@{} / {}'.format(self.username, self.date.strftime('%B %Y')), 
-            font=ImageFont.truetype('cutive.ttf', 32), fill=(0,0,0))
+        font = ImageFont.truetype('cutive.ttf', 48)
+        text = '@{} / {}'.format(self.username, self.date.strftime('%B %Y'))
+        size = font.getsize(text)
+        self.draw.text(((1181 / 2) - (size[0] / 2),1100), text, font=font, fill=(0,0,0))
 
     def draw_image(self):
         self.im = Image.open(BASE_IMAGE).convert('RGB')
@@ -61,10 +64,17 @@ class ModesPrinter(object):
         conn = cups.Connection()
         conn.printFile(PRINTER, self.filename, 'title', {})
 
+    def show_image(self):
+        self.im.show()
+
     def process_image(self):
         self.draw_image()
         self.save_image()
         self.print_image()
+
+    def test_image(self):
+        self.draw_image()
+        self.show_image()
 
 
 def process_jobs(jobs):
@@ -88,4 +98,8 @@ def loop():
             sleep(10)
 
 if __name__ == '__main__':
-    loop()
+    if len(sys.argv) > 1 and sys.argv[1] == 'test':
+        test = 'yuv.adm|062015|9A8D6D736489|eff51f2af82c06071120a'
+        ModesPrinter(test).test_image()
+    else:
+        loop()
