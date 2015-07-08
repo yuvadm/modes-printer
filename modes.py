@@ -102,5 +102,5 @@ if __name__ == '__main__':
         test = 'yuv.adm|062015|9A8D6D736489|eff51f2af82c06071120a'
         ModesPrinter(test).test_image()
     else:
-        print('{} :: Startup'.format(datetime.now().isoformat())
+        print('{} :: Startup'.format(datetime.now().isoformat()))
         loop()
