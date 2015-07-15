@@ -30,7 +30,7 @@ class ModesPrinter(object):
     def __init__(self, imstr):
         username, d, dominants, matrix = imstr.split('|')
         self.username = username
-        self.date = datetime.strptime(d, '%m%Y').date()
+        self.date = datetime.strptime(d, '%m%y').date()
         self.dominants = [ImageColor.getrgb(x) for x in ('#' + dominants[:6], '#' + dominants[6:])]
         self.matrix = bin(int(matrix, 16))[2+MATRIX_PADDING:]
         self.filename = 'photos/{}_{}.jpg'.format(self.username, self.date.strftime('%Y_%m'))
